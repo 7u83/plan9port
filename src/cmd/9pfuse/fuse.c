@@ -127,9 +127,12 @@ readfusemsg(void)
 			goto bad;
 		break;	
 	case FUSE_MKNOD:
+#if defined(__FreeBSD__) && !defined(__APPLE__)
+#else	
 		if(m->hdr->len <= sizeof(struct fuse_mknod_in)
 		|| ((char*)m->tx)[m->hdr->len-1] != 0)
 			goto bad;
+#endif		
 		break;
 	case FUSE_MKDIR:
 		if(m->hdr->len <= sizeof(struct fuse_mkdir_in)
@@ -394,9 +397,12 @@ fusefmt(Fmt *fmt)
 				break;
 			}
 			case FUSE_MKNOD: {
+#if defined(__FreeBSD__) && !defined(__APPLE__)
+#else						 
 				struct fuse_mknod_in *tx = a;
 				fmtprint(fmt, "Mknod nodeid %#llux mode %#uo rdev %#ux name %#q",
 					hdr->nodeid, tx->mode, tx->rdev, tx+1);
+#endif				
 				break;
 			}
 			case FUSE_MKDIR: {
@@ -490,9 +496,12 @@ fusefmt(Fmt *fmt)
 				break;
 			}
 			case FUSE_FLUSH: {
+#if defined(__FreeBSD__) && !defined(__APPLE__)
+#else
 				struct fuse_flush_in *tx = a;
 				fmtprint(fmt, "Flush nodeid %#llux fh %#llux flags %#ux",
 					hdr->nodeid, tx->fh, tx->flush_flags);
+#endif				
 				break;
 			}
 			case FUSE_INIT: {
